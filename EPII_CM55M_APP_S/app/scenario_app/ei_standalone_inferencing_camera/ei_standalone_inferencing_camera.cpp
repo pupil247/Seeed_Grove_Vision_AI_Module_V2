@@ -47,6 +47,8 @@ static int get_signal_data(size_t offset, size_t length, float *out_ptr);
 
 static uint8_t raw_image[EI_CLASSIFIER_INPUT_WIDTH * EI_CLASSIFIER_INPUT_HEIGHT * 3] __ALIGNED(32);
 
+ei_impulse_handle_t *handle;
+
 static void dp_var_int()
 {
 	g_xdma_abnormal = 0;
@@ -209,11 +211,11 @@ static void event_handler_cb(EVT_INDEX_E event)
         signal.total_length = EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE;
         signal.get_data = &get_signal_data;
 
-		EI_IMPULSE_ERROR res = run_classifier(&signal, &result, false);
+		EI_IMPULSE_ERROR res = run_classifier(handle, &signal, &result, false);
 
 		// Print return code and how long it took to perform inference
 		ei_printf("run_classifier returned: %d\r\n", res);
-        display_results(&result);
+        display_results(handle, &result);
 #ifdef CIS_IMX
 		hx_drv_scu_get_version(&chipid, &version);
 		if (chipid == WE2_CHIP_VERSION_C)   // mipi workaround for WE2 chip version C

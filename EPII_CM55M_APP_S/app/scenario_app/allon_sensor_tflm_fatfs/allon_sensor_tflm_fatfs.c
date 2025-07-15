@@ -60,7 +60,7 @@
 #include "cisdp_sensor.h"
 #include "event_handler.h"
 #include "common_config.h"
-#include "person_detect_model_data_vela.h"
+#include "head_detect_model_data.h"
 
 #ifdef EPII_FPGA
 #define DBG_APP_LOG             (1)
@@ -230,12 +230,17 @@ static void dp_app_cv_eventhdl_cb(EVT_INDEX_E event)
 		dbg_printf(DBG_LESS_INFO, "addr=0x%x, YUV write frame result %d, data size %d\n", wdam3_addr, read_status, data_size);
 		#endif
 #else
-		xsprintf(filename, "image%04d.jpg", g_cur_jpegenc_frame);
-		dbg_printf(DBG_LESS_INFO, "write frame to %s, data size=%d,addr=0x%x\n", filename, jpeg_sz, jpeg_addr);
-		read_status = fastfs_write_image(jpeg_addr, jpeg_sz, filename);
+		
+		//printf("Checking now if there is person in frame...");
+		if(cv_run()) {
+			printf("Saving picture...");
+			xsprintf(filename, "image%04d.jpg", g_cur_jpegenc_frame);
+			dbg_printf(DBG_LESS_INFO, "write frame to %s, data size=%d,addr=0x%x\n", filename, jpeg_sz, jpeg_addr);
+			read_status = fastfs_write_image(jpeg_addr, jpeg_sz, filename);
+		}
 #endif
 
-		cv_run();
+		
 
 #ifdef CIS_IMX
 		hx_drv_scu_get_version(&chipid, &version);

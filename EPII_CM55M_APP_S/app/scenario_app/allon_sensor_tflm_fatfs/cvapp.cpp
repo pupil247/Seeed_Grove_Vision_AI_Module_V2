@@ -1,7 +1,7 @@
 /*
  * cvapp.cpp
  *
- *  Created on: 2022¦~11¤ë18¤é
+ *  Created on: 2022ï¿½~11ï¿½ï¿½18ï¿½ï¿½
  *      Author: 902452
  */
 
@@ -29,7 +29,7 @@
 #include "xprintf.h"
 #include "cisdp_cfg.h"
 
-#include "person_detect_model_data_vela.h"
+#include "head_detect_model_data.h"
 #include "common_config.h"
 
 #define LOCAL_FRAQ_BITS (8)
@@ -226,10 +226,13 @@ int cv_run() {
 	int8_t no_person_score = output->data.int8[0];
 
 	xprintf("person_score:%d\n",person_score);
+    xprintf("no_person_score:%d\n",no_person_score);
+    if(person_score > 15 && no_person_score < 0) {
+        return 1;
+    }
 	//error_reporter->Report(
 	//	   "person score: %d, no person score: %d\n", person_score,
 	//	   no_person_score);
-
 	return ercode;
 }
 
